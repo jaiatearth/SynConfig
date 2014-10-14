@@ -1,0 +1,139 @@
+<hTML> 
+<HEAD> 
+	<link rel="stylesheet" href="ui.core.css" type="text/css"></link>
+	<link rel="stylesheet" href="drag.css" type="text/css"></link>        
+        <link  href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css" rel="stylesheet" type="text/css" ></link>
+	<link rel="stylesheet" href="ui.resizable.css" type="text/css"></link>
+	<link rel="stylesheet" href="ui.theme.css" type="text/css"></link>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="http://code.jquery.com/jquery-1.7.1.min.js" type="text/javascript" ></script>
+        <script src="ui.core.js" type="text/javascript"></script>
+        <script src="ui.draggable.js" type="text/javascript"></script>
+        <script src="ui.droppable.js" type="text/javascript"></script>
+        <script src="ui.resizable.js" type="text/javascript"></script>       
+        <script type="text/javascript">         
+         var new_height,new_width;
+         var socket = io.connect('http://192.168.2.55:2013');
+
+      //Event Emited from server-side for setting the Cookie...        
+         socket.on("id",function(x){
+                        name="SynConfig_id";
+                        days=100;
+                        value=x;
+                        setCookie(name,value,days);   
+                        function setCookie(name,value,days){
+                		if (days) {
+		                var date = new Date();
+	        	        date.setTime(date.getTime()+(days*24*60*60*1000));
+		                var expires = "; expires="+date.toGMTString();
+		                }
+        		        else
+	        	        var expires = "";
+	                	if(document.cookie==""){
+		                document.cookie = name+"="+x+expires+"; path=/";
+	        	        alert("Welcome, your SynConfig ID is : "+x);	
+				}
+		                else{}
+				}
+        	       });
+         $(document).ready(function() {    
+
+$('#ta1').css('width', localStorage.width);
+                $('#ta1').css('height',localStorage.height);
+                $('#ta1').parent().css('width', localStorage.pwidth).css('height',localStorage.pheight);
+                ta1.value=localStorage.text;
+                    $('#drag').css('top',localStorage.top_position);
+                    $('#drag').css('left',localStorage.left_position);
+               		$("#drag").draggable({
+                	        stop: function(event,ui){
+				var top=drag.style.top;
+	                        var left=drag.style.left;
+                                localStorage.left_position=left;
+                                localStorage.top_position=top;
+	                        socket.emit('pos',top,left);
+        	                }
+                        }); 
+        	      $("#ta1").resizable({
+				stop: function(event, ui){
+                                parent_height=ui.size.height;
+                                parent_width=ui.size.width;
+				new_height = $(ui.element.context).height();
+				new_width  = $(ui.element.context).width();
+                                val=ta1.value;
+                                localStorage.pheight=parent_height;
+                                localStorage.pwidth=parent_width;
+                                localStorage.height=new_height;
+                                localStorage.width=new_width;
+                                localStorage.text=val;
+
+				socket.emit('get_position',new_height,new_width,parent_height,parent_width,val);                              
+				}
+		     });
+		$("#ta1").bind("resizestop", function(){			
+		});
+                $("#drag").bind("dragstop",function(){
+		});
+
+// Emitted On Resizing..
+  
+       socket.on("changeSize",function(height,width,pHeight, pWidth,val,x){
+//       var notify=confirm("There is some changes happened.Do you want the same?");
+  //      if (notify==true){
+                localStorage.pheight=pHeight;
+                localStorage.pwidth=pWidth;
+                localStorage.height=height;
+                localStorage.width=width;
+                localStorage.text=val;
+                $('#ta1').css('width', width );
+                $('#ta1').css('height',height );
+		$('#ta1').parent().css('width', width).css('height',height);
+                ta1.value=val;
+    //    }
+      //  else{
+        
+//}       
+	});     
+
+// Fixing the position & size in Client Side..
+        socket.on("c",function(top,left){ 
+//        var notify=confirm("There is some changes happened.Do you want the same?");
+  //       if(notify==true){
+         localStorage.top_position=top;
+         localStorage.left_position=left;
+        $('#drag').css('top',top);
+        $('#drag').css('left',left);
+    //    }
+      //  else{ }
+        });             	    
+ }); 
+
+</script>
+</HEAD>
+   <BODY bgcolor="#000000" text="white">
+<h2><center></center></h2>
+
+        <div id="layout" align="center">
+            <div class="headerContent" style="margin:0 0 18px 0;">
+	<div id='header'>
+		<img class="logoImg" src='msf_logo.png' border='0' alt='Mobile Trading'/>
+		<img class="logoImg" src='sync-48x48-9a55c204a85edb88567e1be87f099389.png' border='0' alt='Mobile'/>
+                <b>SynConfig</b>
+		</a>		
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</div>
+</div>
+	<div id="drag">
+       		<form>
+                	<textarea id='ta1' class='property' rows="5" cols="50" style="font-family:comic sans ms ; font-size : 25px" > "Text", "Reposition", "Resizing" Sync is Activated with Notification</textarea>        
+                         
+	        </form> 
+	</div>
+</div>
+</BODY>
+</HTML>
+
