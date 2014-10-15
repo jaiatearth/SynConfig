@@ -5,7 +5,7 @@ It is a syncing server, in turn it is just an library written with javascript/ s
 
 What it will do?
 
-Synconfig, will sync the application functionally between multiple devices based on login authentication, with the help of pub/sub in redis and socket.io. Socket.io will create a bandwidth, through that bandwidth the clients will talk with the server, then the redis will help to create a seperate channel for each clients and we can subscribe it, afte these we can share the data changed between devices, so the communication will ne nXn. Synconfig is inclusive of SocketServer, Provider, and some client libraries. The role of each is detailed further,
+Synconfig, will sync the application functionally between multiple devices based on login authentication, with the help of pub/sub in redis and socket.io. Socket.io will create a bandwidth, through that bandwidth the clients will communicate with the server, then the redis will help to create a seperate channel for each clients and we can subscribe it, afte these we can share the data changed between devices, so the communication will be nXn. Synconfig is inclusive of SocketServer, Provider, and some client libraries. The role of each is detailed further,
 
 
 Roles of SocketServer
